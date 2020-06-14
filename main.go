@@ -21,7 +21,12 @@ func main() {
 	})
 
 	server.POST("/tasks", func(ctx *gin.Context) {
-		ctx.JSON(http.StatusOK, taskController.Save(ctx))
+		err := taskController.Save(ctx)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		} else {
+			ctx.JSON(http.StatusOK, gin.H{"message": "saved"})
+		}
 	})
 
 	server.Run(":8080")

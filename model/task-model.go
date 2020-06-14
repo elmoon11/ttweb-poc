@@ -5,7 +5,7 @@ import (
 )
 
 type Task struct {
-	Title       string `json:"title"`
+	Title       string `json:"title" binding:"required"`
 	Description string `json:"description"`
 	Created     string `json:"created"`
 	StartTime   string `json:"startTime"`

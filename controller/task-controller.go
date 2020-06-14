@@ -8,7 +8,7 @@ import (
 
 type TaskController interface {
 	FindAll() []model.Task
-	Save(ctx *gin.Context) model.Task
+	Save(ctx *gin.Context) error
 }
 
 type controller struct {
@@ -25,9 +25,12 @@ func (c *controller) FindAll() []model.Task {
 	return c.service.FindAll()
 }
 
-func (c *controller) Save(ctx *gin.Context) model.Task {
+func (c *controller) Save(ctx *gin.Context) error {
 	var task model.Task
-	ctx.BindJSON(&task)
+	err := ctx.ShouldBindJSON(&task)
+	if err != nil {
+		return err
+	}
 	c.service.Save(task)
-	return task
+	return nil
 }

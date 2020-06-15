@@ -16,18 +16,40 @@ var (
 func main() {
 	server := gin.Default()
 
-	server.GET("/tasks", func(ctx *gin.Context) {
-		ctx.JSON(http.StatusOK, taskController.FindAll())
-	})
+	routeGroup := server.Group("/api")
+	{
+		server.GET("/tasks", func(ctx *gin.Context) {
+			ctx.JSON(http.StatusOK, taskController.FindAll())
+		})
 
-	server.POST("/tasks", func(ctx *gin.Context) {
-		err := taskController.Save(ctx)
-		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		} else {
-			ctx.JSON(http.StatusOK, gin.H{"message": "saved"})
-		}
-	})
+		server.POST("/tasks", func(ctx *gin.Context) {
+			err := taskController.Save(ctx)
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			} else {
+				ctx.JSON(http.StatusOK, gin.H{"message": "saved"})
+			}
+		})
+
+		server.PUT("/tasks/:id", func(ctx *gin.Context) {
+			err := taskController.Update(ctx)
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			} else {
+				ctx.JSON(http.StatusOK, gin.H{"message": "updated"})
+			}
+		})
+
+		server.DELETE("/tasks/:id", func(ctx *gin.Context) {
+			err := taskController.Delete(ctx)
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			} else {
+				ctx.JSON(http.StatusOK, gin.H{"message": "deleted"})
+			}
+		})
+
+	}
 
 	server.Run(":8080")
 

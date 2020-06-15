@@ -1,13 +1,13 @@
 package controller
 
 import (
-	"github.com/elmoon11/ttweb-poc/model"
+	"github.com/elmoon11/ttweb-poc/entities"
 	"github.com/elmoon11/ttweb-poc/service"
 	"github.com/gin-gonic/gin"
 )
 
 type TaskController interface {
-	FindAll() []model.Task
+	FindAll() []entities.Task
 	Save(ctx *gin.Context) error
 }
 
@@ -21,12 +21,12 @@ func New(service service.TaskService) TaskController {
 	}
 }
 
-func (c *controller) FindAll() []model.Task {
+func (c *controller) FindAll() []entities.Task {
 	return c.service.FindAll()
 }
 
 func (c *controller) Save(ctx *gin.Context) error {
-	var task model.Task
+	var task entities.Task
 	err := ctx.ShouldBindJSON(&task)
 	if err != nil {
 		return err

@@ -4,25 +4,29 @@ import (
 	"net/http"
 
 	"github.com/elmoon11/ttweb-poc/controller"
+	"github.com/elmoon11/ttweb-poc/repository"
 	"github.com/elmoon11/ttweb-poc/service"
 	"github.com/gin-gonic/gin"
 )
 
 var (
-	taskService    service.TaskService       = service.New()
+	taskRepository repository.TaskRepository = repository.NewTaskRepository()
+	taskService    service.TaskService       = service.New(taskRepository)
 	taskController controller.TaskController = controller.New(taskService)
 )
 
 func main() {
 	server := gin.Default()
 
+	defer taskRepository.CloseDB()
+
 	routeGroup := server.Group("/api")
 	{
-		server.GET("/tasks", func(ctx *gin.Context) {
+		routeGroup.GET("/tasks", func(ctx *gin.Context) {
 			ctx.JSON(http.StatusOK, taskController.FindAll())
 		})
 
-		server.POST("/tasks", func(ctx *gin.Context) {
+		routeGroup.POST("/tasks", func(ctx *gin.Context) {
 			err := taskController.Save(ctx)
 			if err != nil {
 				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -31,7 +35,7 @@ func main() {
 			}
 		})
 
-		server.PUT("/tasks/:id", func(ctx *gin.Context) {
+		routeGroup.PUT("/tasks/:id", func(ctx *gin.Context) {
 			err := taskController.Update(ctx)
 			if err != nil {
 				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -40,7 +44,7 @@ func main() {
 			}
 		})
 
-		server.DELETE("/tasks/:id", func(ctx *gin.Context) {
+		routeGroup.DELETE("/tasks/:id", func(ctx *gin.Context) {
 			err := taskController.Delete(ctx)
 			if err != nil {
 				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

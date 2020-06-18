@@ -7,6 +7,7 @@ import (
 	"github.com/elmoon11/ttweb-poc/repository"
 	"github.com/elmoon11/ttweb-poc/service"
 	"github.com/gin-gonic/gin"
+	"github.com/tpkeeper/gin-dump"
 )
 
 var (
@@ -19,6 +20,9 @@ func main() {
 	server := gin.Default()
 
 	defer taskRepository.CloseDB()
+
+	server.Use(gin.Recovery())
+	server.Use(gindump.Dump())
 
 	routeGroup := server.Group("/api")
 	{
